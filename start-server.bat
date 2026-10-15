@@ -1,0 +1,8 @@
+@echo off
+title Siraj Ventures Local Server
+echo ===================================================
+echo   Siraj Ventures - Redesigned Local Server
+echo ===================================================
+echo Starting local web server on http://localhost:8088/ ...
+powershell -ExecutionPolicy Bypass -NoExit -Command "& { $port = 8088; $root = 'C:\Users\Lenovo\Downloads\SV SITE\sv final site'; $listener = [System.Net.HttpListener]::new(); $listener.Prefixes.Add(\"http://localhost:$port/\"); $listener.Prefixes.Add(\"http://127.0.0.1:$port/\"); try { $listener.Start(); Write-Host 'Server running at http://localhost:8088/' -ForegroundColor Green; Start-Process 'http://localhost:8088/index.html'; while($listener.IsListening) { $ctx = $listener.GetContext(); $req = $ctx.Request; $res = $ctx.Response; $path = $req.Url.LocalPath; if($path -eq '/' -or $path -eq '') { $path = '/index.html' }; $file = [System.IO.Path]::Combine($root, $path.TrimStart('/').Replace('/', '\')); if([System.IO.File]::Exists($file)) { $bytes = [System.IO.File]::ReadAllBytes($file); $ext = [System.IO.Path]::GetExtension($file).ToLower(); $mime = 'text/plain'; switch($ext) { '.html' { $mime='text/html; charset=utf-8' } '.css' { $mime='text/css; charset=utf-8' } '.js' { $mime='application/javascript; charset=utf-8' } '.png' { $mime='image/png' } '.jpg' { $mime='image/jpeg' } '.svg' { $mime='image/svg+xml' } '.ico' { $mime='image/x-icon' } }; $res.ContentType = $mime; $res.StatusCode = 200; $res.OutputStream.Write($bytes, 0, $bytes.Length); } else { $res.StatusCode = 404; }; $res.OutputStream.Close(); } } catch { Write-Host $_.Exception.Message -ForegroundColor Red; } }"
+pause
